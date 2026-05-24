@@ -1,11 +1,11 @@
 {
   "name": "N-Lookup — FAA Aircraft Registry",
   "short_name": "N-Lookup",
-  "description": "FAA aircraft tail number lookup for pilots and aviation buyers",
-  "start_url": "/lookup/",
+  "description": "FAA aircraft tail number lookup",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0c0f",
-  "theme_color": "#0a0c0f",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "orientation": "portrait",
   "icons": [
     {
