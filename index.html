@@ -307,14 +307,6 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
     <div id="result"></div>
 
     <div id="home-state">
-      <div id="recent-section" style="display:none">
-        <div class="recent-label">Recent lookups</div>
-        <div class="recent-chips" id="recent-chips"></div>
-      </div>
-      <div class="empty-state">
-        <div class="empty-title">Look up any tail number</div>
-        <div class="empty-sub">Get make, model, year, engine, owner, and registration details for any FAA-registered aircraft.</div>
-      </div>
       <div class="install-prompt" id="install-prompt">
         <div class="install-prompt-title">Save this app to your phone</div>
         <div class="install-prompt-text" id="install-text">
@@ -325,10 +317,12 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
           <span onclick="switchTab('about')" style="display:inline-block;background:#1a2744;color:#f0c050;font-family:var(--cond);font-weight:700;font-size:14px;letter-spacing:0.1em;text-transform:uppercase;padding:10px 24px;border-radius:8px;cursor:pointer">Full instructions &darr;</span>
         </div>
       </div>
+      <div class="empty-state">
+        <div class="empty-title">Look up any tail number</div>
+        <div class="empty-sub">Get make, model, year, engine, owner, and registration details for any FAA-registered aircraft.</div>
+      </div>
     </div>
   </div>
-
-  <div class="tab-pane" id="tab-history"><div class="history-list" id="history-list"></div></div>
 
   <div class="tab-pane" id="tab-about">
     <div class="about-content">
@@ -372,10 +366,6 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     <span class="nav-label">Lookup</span>
   </div>
-  <div class="nav-item" id="nav-history" onclick="switchTab('history')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
-    <span class="nav-label">History</span>
-  </div>
   <div class="nav-item" id="nav-about" onclick="switchTab('about')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     <span class="nav-label">Install</span>
@@ -384,14 +374,13 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 
 <script>
 const API = 'https://smallplanevalue.com/.netlify/functions/proxy';
-let hs = JSON.parse(localStorage.getItem('nlookup_history') || '[]');
 
 function switchTab(t) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('tab-' + t).classList.add('active');
   document.getElementById('nav-' + t).classList.add('active');
-  if (t === 'history') renderHistory();
+  if (t === 'about') {}
 }
 
 async function doLookup() {
@@ -414,9 +403,7 @@ async function doLookup() {
     document.getElementById('lookup-btn').disabled = false;
     if (!r.ok || d.error) { renderError(d.error || 'Lookup failed.'); return; }
     if (!d.found) { renderNotFound(nn); return; }
-    saveH(d);
     renderResult(d);
-    updateChips();
   } catch (e) {
     document.getElementById('loading').classList.remove('on');
     document.getElementById('lookup-btn').disabled = false;
@@ -492,38 +479,6 @@ function renderError(m) {
   document.querySelector('.hero').style.display = 'block';
 }
 
-function saveH(d) {
-  hs = hs.filter(h => h.nn !== d.nnumber);
-  hs.unshift({ nn: d.nnumber, make: d.make, model: d.model, year: d.year, ts: Date.now(), data: d });
-  if (hs.length > 50) hs = hs.slice(0, 50);
-  localStorage.setItem('nlookup_history', JSON.stringify(hs));
-}
-
-function renderHistory() {
-  const el = document.getElementById('history-list');
-  if (!hs.length) { el.innerHTML = '<div class="history-empty">No lookups yet.<br>Search a tail number to get started.</div>'; return; }
-  el.innerHTML = hs.map(h => '<div class="history-item" onclick="lH(\'' + h.nn + '\')"><div><div class="history-nn">' + h.nn + '</div><div class="history-info">' + [h.year, h.make, h.model].filter(Boolean).join(' \u00b7 ') + '</div></div><div class="history-arrow">\u203a</div></div>').join('');
-}
-
-function lH(nn) {
-  const i = hs.find(h => h.nn === nn);
-  if (!i) return;
-  document.getElementById('nn').value = nn.replace(/^N/, '');
-  switchTab('lookup');
-  document.querySelector('.hero').style.display = 'none';
-  renderResult(i.data);
-  document.getElementById('home-state').style.display = 'none';
-}
-
-function updateChips() {
-  const r = hs.slice(0, 6);
-  if (!r.length) { document.getElementById('recent-section').style.display = 'none'; return; }
-  document.getElementById('recent-section').style.display = 'block';
-  document.getElementById('recent-chips').innerHTML = r.map(h => '<div class="chip" onclick="document.getElementById(\'nn\').value=\'' + h.nn.replace(/^N/, '') + '\';doLookup()">' + h.nn + '</div>').join('');
-}
-
-updateChips();
-if (hs.length) document.getElementById('recent-section').style.display = 'block';
 if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
   var ip = document.getElementById('install-prompt'); if(ip) ip.style.display = 'none';
 }
