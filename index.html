@@ -4,1054 +4,511 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="N-Lookup">
-<meta name="theme-color" content="#0a0c0f">
+<meta name="theme-color" content="#ffffff">
 <title>N-Lookup — FAA Aircraft Registry</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:        #0a0c0f;
-    --panel:     #0f1318;
-    --card:      #141920;
-    --border:    #1e2830;
-    --amber:     #e8a030;
-    --amber-dim: #7a4e10;
-    --green:     #4ec994;
-    --green-dim: #1a4a35;
-    --sky:       #5ab4e0;
-    --sky-dim:   #1a3a50;
-    --red:       #e05050;
-    --red-dim:   #4a1a1a;
-    --muted:     #4a5a68;
-    --text:      #c8d8e8;
-    --text-dim:  #6a7a88;
-    --mono:      'Share Tech Mono', monospace;
-    --sans:      'Barlow', sans-serif;
-    --cond:      'Barlow Condensed', sans-serif;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    overscroll-behavior: none;
-  }
-
-  body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-  }
-
-  /* ── HEADER ── */
-  .header {
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    padding: env(safe-area-inset-top, 0) 0 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .header-inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
-  }
-
-  .logo-mark {
-    width: 34px;
-    height: 34px;
-    border: 2px solid var(--amber);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .logo-mark svg { width: 18px; height: 18px; }
-
-  .logo-text {
-    font-family: var(--cond);
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: 0.08em;
-    color: var(--amber);
-    text-transform: uppercase;
-  }
-
-  .logo-sub {
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-top: 1px;
-  }
-
-  /* ── SEARCH ── */
-  .search-zone {
-    padding: 18px 18px 0;
-  }
-
-  .search-wrap {
-    position: relative;
-    display: flex;
-    gap: 10px;
-  }
-
-  .n-prefix {
-    font-family: var(--mono);
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--amber);
-    line-height: 1;
-    padding: 14px 0 14px 16px;
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-right: none;
-    border-radius: 10px 0 0 10px;
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
-
-  .nn-input {
-    flex: 1;
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-left: none;
-    border-radius: 0 10px 10px 0;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 22px;
-    padding: 14px 14px 14px 4px;
-    outline: none;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    caret-color: var(--amber);
-    transition: border-color 0.2s;
-    width: 0; /* flex will size it */
-    -webkit-appearance: none;
-  }
-
-  .nn-input::placeholder { color: var(--muted); letter-spacing: 0.05em; font-size: 18px; }
-  .nn-input:focus { border-color: var(--amber-dim); }
-  .nn-input:focus ~ .search-glow { opacity: 1; }
-
-  .lookup-btn {
-    background: var(--amber);
-    color: #0a0a0a;
-    border: none;
-    border-radius: 10px;
-    padding: 0 20px;
-    font-family: var(--cond);
-    font-weight: 700;
-    font-size: 15px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-    flex-shrink: 0;
-    -webkit-appearance: none;
-  }
-
-  .lookup-btn:active { background: #c88020; transform: scale(0.97); }
-  .lookup-btn:disabled { background: var(--amber-dim); color: var(--muted); }
-
-  .search-hint {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    padding: 8px 2px 16px;
-    letter-spacing: 0.05em;
-  }
-
-  /* ── RECENT ── */
-  .recent-label {
-    font-family: var(--cond);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-    padding: 0 18px 8px;
-  }
-
-  .recent-chips {
-    display: flex;
-    gap: 8px;
-    padding: 0 18px 18px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .recent-chips::-webkit-scrollbar { display: none; }
-
-  .chip {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--sky);
-    white-space: nowrap;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-    flex-shrink: 0;
-  }
-
-  .chip:active { background: var(--sky-dim); border-color: var(--sky); }
-
-  /* ── LOADING ── */
-  .loading {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    gap: 20px;
-  }
-
-  .loading.on { display: flex; }
-
-  .radar {
-    width: 64px;
-    height: 64px;
-    position: relative;
-  }
-
-  .radar-ring {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 1.5px solid var(--amber-dim);
-  }
-
-  .radar-sweep {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 1.5px solid transparent;
-    border-top-color: var(--amber);
-    animation: spin 1s linear infinite;
-  }
-
-  .radar-dot {
-    position: absolute;
-    width: 6px;
-    height: 6px;
-    background: var(--amber);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: pulse 1s ease-in-out infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-  .loading-text {
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    animation: blink 1.4s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  /* ── RESULT ── */
-  .result { padding: 0 18px 100px; animation: fadeUp 0.3s ease; }
-  @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
-
-  /* ── IDENT CARD ── */
-  .ident-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-
-  .ident-header {
-    background: linear-gradient(135deg, #0d1820 0%, #0f1e14 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 18px;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .ident-nn {
-    font-family: var(--mono);
-    font-size: 32px;
-    color: var(--green);
-    letter-spacing: 0.06em;
-    line-height: 1;
-  }
-
-  .ident-make-model {
-    font-family: var(--cond);
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
-  .ident-year {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-
-  .status-badge {
-    font-family: var(--cond);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 5px 10px;
-    border-radius: 6px;
-    flex-shrink: 0;
-  }
-
-  .status-valid   { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-dim); }
-  .status-invalid { background: var(--red-dim);   color: var(--red);   border: 1px solid var(--red-dim); }
-  .status-other   { background: #1a2030;          color: var(--muted); border: 1px solid var(--border); }
-
-  /* ── DATA GRID ── */
-  .data-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .data-cell {
-    padding: 13px 16px;
-    border-bottom: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-  }
-
-  .data-cell:nth-child(even) { border-right: none; }
-  .data-cell:nth-last-child(-n+2) { border-bottom: none; }
-  .data-cell.full { grid-column: 1 / -1; border-right: none; }
-  .data-cell.full:last-child { border-bottom: none; }
-
-  .cell-label {
-    font-family: var(--cond);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .cell-value {
-    font-family: var(--mono);
-    font-size: 14px;
-    color: var(--text);
-    letter-spacing: 0.02em;
-  }
-
-  .cell-value.accent { color: var(--amber); }
-  .cell-value.sky { color: var(--sky); }
-  .cell-value.green { color: var(--green); }
-  .cell-value.dim { color: var(--muted); font-style: italic; }
-
-  /* ── SECTION CARDS ── */
-  .section-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-    margin-bottom: 12px;
-  }
-
-  .section-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-icon {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .section-icon.amber { background: var(--amber); }
-  .section-icon.sky   { background: var(--sky); }
-  .section-icon.green { background: var(--green); }
-
-  .section-title {
-    font-family: var(--cond);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
-
-  /* ── NOT FOUND ── */
-  .not-found {
-    text-align: center;
-    padding: 50px 20px;
-  }
-
-  .not-found-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-    opacity: 0.4;
-  }
-
-  .not-found-title {
-    font-family: var(--cond);
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 8px;
-    letter-spacing: 0.05em;
-  }
-
-  .not-found-sub {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  /* ── ERROR ── */
-  .error-banner {
-    background: var(--red-dim);
-    border: 1px solid var(--red);
-    border-radius: 10px;
-    padding: 14px 16px;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--red);
-    text-align: center;
-    margin-bottom: 12px;
-  }
-
-  /* ── BOTTOM NAV ── */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--panel);
-    border-top: 1px solid var(--border);
-    padding: 10px 0 env(safe-area-inset-bottom, 10px);
-    display: flex;
-    justify-content: space-around;
-    z-index: 100;
-  }
-
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 6px 20px;
-    cursor: pointer;
-    opacity: 0.45;
-    transition: opacity 0.15s;
-  }
-
-  .nav-item.active { opacity: 1; }
-
-  .nav-item svg { width: 22px; height: 22px; }
-  .nav-item.active svg { stroke: var(--amber); }
-
-  .nav-label {
-    font-family: var(--cond);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-
-  .nav-item.active .nav-label { color: var(--amber); }
-
-  /* ── SCROLL AREA ── */
-  .scroll-area {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-
-  /* ── EMPTY STATE ── */
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 30px;
-    text-align: center;
-    gap: 12px;
-  }
-
-  .empty-plane {
-    opacity: 0.15;
-    margin-bottom: 8px;
-  }
-
-  .empty-title {
-    font-family: var(--cond);
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    color: var(--text);
-  }
-
-  .empty-sub {
-    font-family: var(--sans);
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.6;
-    max-width: 280px;
-  }
-
-  /* ── HISTORY TAB ── */
-  .history-list { padding: 12px 18px 100px; }
-
-  .history-item {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .history-item:active { border-color: var(--amber-dim); }
-
-  .history-nn {
-    font-family: var(--mono);
-    font-size: 18px;
-    color: var(--green);
-    letter-spacing: 0.06em;
-  }
-
-  .history-info {
-    font-family: var(--cond);
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 3px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-
-  .history-arrow {
-    color: var(--muted);
-    opacity: 0.5;
-  }
-
-  .history-empty {
-    text-align: center;
-    padding: 60px 20px;
-    font-family: var(--mono);
-    font-size: 13px;
-    color: var(--muted);
-  }
-
-  /* ── ABOUT TAB ── */
-  .about-content {
-    padding: 20px 18px 100px;
-  }
-
-  .about-logo {
-    text-align: center;
-    padding: 30px 0 24px;
-  }
-
-  .about-logo-big {
-    font-family: var(--cond);
-    font-size: 42px;
-    font-weight: 700;
-    color: var(--amber);
-    letter-spacing: 0.1em;
-  }
-
-  .about-logo-sub {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    margin-top: 4px;
-  }
-
-  .about-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    margin-bottom: 12px;
-  }
-
-  .about-card-title {
-    font-family: var(--cond);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    color: var(--amber);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .about-card p {
-    font-size: 14px;
-    color: var(--text-dim);
-    line-height: 1.7;
-    margin-bottom: 8px;
-  }
-
-  .about-card p:last-child { margin-bottom: 0; }
-
-  .install-steps {
-    list-style: none;
-    counter-reset: steps;
-  }
-
-  .install-steps li {
-    counter-increment: steps;
-    display: flex;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
-
-  .install-steps li:last-child { border-bottom: none; }
-
-  .install-steps li::before {
-    content: counter(steps);
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--amber);
-    background: var(--amber-dim);
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  /* ── TABS ── */
-  .tab-pane { display: none; }
-  .tab-pane.active { display: block; }
-
-  /* ── DIVIDER ── */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 0 18px 12px;
-  }
+:root {
+  --bg: #f4f6f8;
+  --white: #ffffff;
+  --card: #ffffff;
+  --border: #e2e6ea;
+  --navy: #1a2744;
+  --navy-light: #2a3d5e;
+  --blue: #1e5faa;
+  --blue-light: #e8f0fa;
+  --green: #1a8a5a;
+  --green-light: #e6f5ee;
+  --amber: #d48a0a;
+  --amber-light: #fef5e2;
+  --red: #cc3333;
+  --red-light: #fce8e8;
+  --muted: #7a8a9a;
+  --text: #1a2744;
+  --text-dim: #5a6a7a;
+  --mono: 'Share Tech Mono', monospace;
+  --sans: 'Barlow', sans-serif;
+  --cond: 'Barlow Condensed', sans-serif;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); overscroll-behavior: none; }
+body { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+.hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+.hero-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 18px 14px;
+  background: linear-gradient(transparent, rgba(26,39,68,0.85));
+}
+.hero-title {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-transform: uppercase;
+}
+.hero-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+
+/* ── SEARCH ── */
+.search-zone {
+  padding: 16px 18px 0;
+  background: var(--bg);
+}
+.search-wrap {
+  display: flex;
+  gap: 10px;
+}
+.n-prefix {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--navy);
+  padding: 14px 0 14px 16px;
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+  display: flex;
+  align-items: center;
+}
+.nn-input {
+  flex: 1;
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-left: none;
+  border-radius: 0 12px 12px 0;
+  color: var(--navy);
+  font-family: var(--mono);
+  font-size: 24px;
+  padding: 14px 14px 14px 4px;
+  outline: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  caret-color: var(--blue);
+  width: 0;
+  -webkit-appearance: none;
+  transition: border-color 0.2s;
+}
+.nn-input::placeholder { color: var(--muted); font-size: 18px; }
+.nn-input:focus { border-color: var(--blue); }
+.n-prefix:has(+ .nn-input:focus) { border-color: var(--blue); }
+.lookup-btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 0 22px;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  -webkit-appearance: none;
+}
+.lookup-btn:active { background: var(--navy-light); transform: scale(0.97); }
+.lookup-btn:disabled { background: var(--muted); }
+.search-hint {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  padding: 8px 2px 14px;
+}
+
+/* ── RECENT ── */
+.recent-label {
+  font-family: var(--cond);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 0 18px 8px;
+}
+.recent-chips {
+  display: flex;
+  gap: 8px;
+  padding: 0 18px 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.recent-chips::-webkit-scrollbar { display: none; }
+.chip {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--blue);
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.chip:active { background: var(--blue-light); border-color: var(--blue); }
+
+/* ── LOADING ── */
+.loading { display: none; flex-direction: column; align-items: center; padding: 60px 20px; gap: 20px; }
+.loading.on { display: flex; }
+.radar { width: 56px; height: 56px; position: relative; }
+.radar-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--border); }
+.radar-sweep { position: absolute; inset: 0; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--navy); animation: spin 1s linear infinite; }
+.radar-dot { position: absolute; width: 6px; height: 6px; background: var(--navy); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%,-50%); animation: pulse 1s ease-in-out infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.loading-text { font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: 0.06em; animation: blink 1.4s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── RESULT ── */
+.result { padding: 16px 18px 100px; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.ident-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; box-shadow: var(--shadow-lg); }
+.ident-header { background: linear-gradient(135deg, #1a2744 0%, #2a4060 100%); padding: 18px 18px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.ident-nn { font-family: var(--mono); font-size: 34px; color: #fff; letter-spacing: 0.06em; line-height: 1; }
+.ident-make-model { font-family: var(--cond); font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.85); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 4px; }
+.ident-year { font-family: var(--mono); font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.status-badge { font-family: var(--cond); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 10px; border-radius: 6px; }
+.status-valid { background: var(--green-light); color: var(--green); }
+.status-invalid { background: var(--red-light); color: var(--red); }
+.status-other { background: var(--bg); color: var(--muted); }
+
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.data-cell { padding: 13px 16px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+.data-cell:nth-child(even) { border-right: none; }
+.data-cell:nth-last-child(-n+2) { border-bottom: none; }
+.data-cell.full { grid-column: 1 / -1; border-right: none; }
+.data-cell.full:last-child { border-bottom: none; }
+.cell-label { font-family: var(--cond); font-size: 10px; font-weight: 600; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+.cell-value { font-family: var(--mono); font-size: 14px; color: var(--text); }
+.cell-value.accent { color: var(--amber); }
+.cell-value.sky { color: var(--blue); }
+.cell-value.green { color: var(--green); }
+.cell-value.dim { color: var(--muted); font-style: italic; }
+
+.section-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 12px; box-shadow: var(--shadow); }
+.section-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.section-icon { width: 8px; height: 8px; border-radius: 50%; }
+.section-icon.amber { background: var(--amber); }
+.section-icon.sky { background: var(--blue); }
+.section-icon.green { background: var(--green); }
+.section-title { font-family: var(--cond); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; }
+
+.not-found { text-align: center; padding: 50px 20px; }
+.not-found-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+.not-found-title { font-family: var(--cond); font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.not-found-sub { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.error-banner { background: var(--red-light); border: 1px solid var(--red); border-radius: 10px; padding: 14px 16px; font-family: var(--mono); font-size: 13px; color: var(--red); text-align: center; margin-bottom: 12px; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); padding: 10px 0 env(safe-area-inset-bottom, 10px); display: flex; justify-content: space-around; z-index: 100; box-shadow: 0 -2px 8px rgba(0,0,0,0.05); }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 20px; cursor: pointer; opacity: 0.4; transition: opacity 0.15s; }
+.nav-item.active { opacity: 1; }
+.nav-item svg { width: 22px; height: 22px; }
+.nav-item.active svg { stroke: var(--navy); }
+.nav-label { font-family: var(--cond); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.nav-item.active .nav-label { color: var(--navy); }
+
+.scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.empty-state { display: flex; flex-direction: column; align-items: center; padding: 30px 30px; text-align: center; gap: 10px; }
+.empty-title { font-family: var(--cond); font-size: 18px; font-weight: 600; color: var(--text); }
+.empty-sub { font-family: var(--sans); font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 300px; }
+
+.history-list { padding: 12px 18px 100px; }
+.history-item { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow); }
+.history-item:active { border-color: var(--blue); }
+.history-nn { font-family: var(--mono); font-size: 18px; color: var(--navy); letter-spacing: 0.06em; font-weight: 600; }
+.history-info { font-family: var(--cond); font-size: 12px; color: var(--muted); margin-top: 3px; text-transform: uppercase; }
+.history-arrow { color: var(--muted); opacity: 0.5; font-size: 20px; }
+.history-empty { text-align: center; padding: 60px 20px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+
+.about-content { padding: 20px 18px 100px; }
+.about-logo { text-align: center; padding: 30px 0 24px; }
+.about-logo-big { font-family: var(--cond); font-size: 42px; font-weight: 700; color: var(--navy); letter-spacing: 0.1em; }
+.about-logo-sub { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.15em; margin-top: 4px; }
+.about-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow); }
+.about-card-title { font-family: var(--cond); font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: var(--navy); text-transform: uppercase; margin-bottom: 10px; }
+.about-card p { font-size: 14px; color: var(--text-dim); line-height: 1.7; margin-bottom: 8px; }
+.about-card p:last-child { margin-bottom: 0; }
+.install-steps { list-style: none; counter-reset: steps; }
+.install-steps li { counter-increment: steps; display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+.install-steps li:last-child { border-bottom: none; }
+.install-steps li::before { content: counter(steps); font-family: var(--mono); font-size: 12px; color: #fff; background: var(--navy); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+.divider { height: 1px; background: var(--border); margin: 0 18px 12px; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-inner">
-    <div class="logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#e8a030" stroke-width="2" stroke-linecap="round">
-        <path d="M12 2L4 10h4v4l-4 4h16l-4-4v-4h4L12 2z"/>
-      </svg>
-    </div>
-    <div>
-      <div class="logo-text">N-Lookup</div>
-      <div class="logo-sub">FAA Aircraft Registry</div>
-    </div>
-  </div>
-
-  <!-- Search always visible -->
-  <div class="search-zone">
-    <div class="search-wrap">
-      <div class="n-prefix">N</div>
-      <input class="nn-input" id="nn" type="text" placeholder="12345" maxlength="6"
-        autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
-        onkeydown="if(event.key==='Enter')doLookup()"
-        oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()">
-      <button class="lookup-btn" id="lookup-btn" onclick="doLookup()">LOOK UP</button>
-    </div>
-    <div class="search-hint">Enter tail number without the N prefix</div>
-  </div>
-</div>
-
 <div class="scroll-area">
-  <!-- TAB: LOOKUP -->
   <div class="tab-pane active" id="tab-lookup">
+    <!-- Hero Image -->
+    <div class="hero">
+      <img src="hero.png" alt="Aircraft">
+      <div class="hero-overlay">
+        <div class="hero-title">N-Lookup</div>
+        <div class="hero-sub">FAA Aircraft Registry</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-zone">
+      <div class="search-wrap">
+        <div class="n-prefix">N</div>
+        <input class="nn-input" id="nn" type="text" placeholder="12345" maxlength="6"
+          autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+          onkeydown="if(event.key==='Enter')doLookup()"
+          oninput="this.value=this.value.replace(/[^A-Z0-9]/gi,'').toUpperCase()">
+        <button class="lookup-btn" id="lookup-btn" onclick="doLookup()">LOOK UP</button>
+      </div>
+      <div class="search-hint">Enter tail number without the N prefix</div>
+    </div>
 
     <div class="loading" id="loading">
-      <div class="radar">
-        <div class="radar-ring"></div>
-        <div class="radar-sweep"></div>
-        <div class="radar-dot"></div>
-      </div>
+      <div class="radar"><div class="radar-ring"></div><div class="radar-sweep"></div><div class="radar-dot"></div></div>
       <div class="loading-text">QUERYING FAA REGISTRY...</div>
     </div>
 
     <div id="result"></div>
 
-    <!-- Empty / recent state -->
     <div id="home-state">
       <div id="recent-section" style="display:none">
         <div class="recent-label">Recent lookups</div>
         <div class="recent-chips" id="recent-chips"></div>
-        <div class="divider"></div>
       </div>
       <div class="empty-state">
-        <div class="empty-plane">
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" stroke="#e8a030" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M40 8L16 36h12v12L16 60h48L52 48V36h12L40 8z"/>
-            <path d="M32 60v8M48 60v8M36 68h8"/>
-          </svg>
-        </div>
-        <div class="empty-title">Aircraft Registry Lookup</div>
-        <div class="empty-sub">Enter any FAA-registered tail number to get make, model, year, engine, owner, and registration details.</div>
+        <div class="empty-title">Look up any tail number</div>
+        <div class="empty-sub">Get make, model, year, engine, owner, and registration details for any FAA-registered aircraft.</div>
       </div>
     </div>
-
   </div>
 
-  <!-- TAB: HISTORY -->
-  <div class="tab-pane" id="tab-history">
-    <div class="history-list" id="history-list"></div>
-  </div>
+  <div class="tab-pane" id="tab-history"><div class="history-list" id="history-list"></div></div>
 
-  <!-- TAB: ABOUT -->
   <div class="tab-pane" id="tab-about">
     <div class="about-content">
       <div class="about-logo">
         <div class="about-logo-big">N-LOOKUP</div>
-        <div class="about-logo-sub">FAA AIRCRAFT REGISTRY · V1.0</div>
+        <div class="about-logo-sub">FAA AIRCRAFT REGISTRY &middot; V1.0</div>
       </div>
-
       <div class="about-card">
         <div class="about-card-title">About</div>
         <p>N-Lookup queries the FAA Aircraft Registry to return registration, airworthiness, engine, and owner information for any N-registered aircraft.</p>
         <p>Data is sourced from the official FAA database via smallplanevalue.com.</p>
       </div>
-
       <div class="about-card">
-        <div class="about-card-title">Add to Home Screen — iPhone</div>
+        <div class="about-card-title">Add to Home Screen &mdash; iPhone</div>
         <ol class="install-steps">
           <li>Open this page in Safari</li>
           <li>Tap the Share button (box with arrow) at the bottom</li>
           <li>Scroll down and tap "Add to Home Screen"</li>
-          <li>Tap "Add" — it will appear on your home screen like an app</li>
+          <li>Tap "Add"</li>
         </ol>
       </div>
-
       <div class="about-card">
-        <div class="about-card-title">Add to Home Screen — Android</div>
+        <div class="about-card-title">Add to Home Screen &mdash; Android</div>
         <ol class="install-steps">
           <li>Open this page in Chrome</li>
-          <li>Tap the three-dot menu (⋮) in the top right</li>
+          <li>Tap the three-dot menu in the top right</li>
           <li>Tap "Add to Home screen"</li>
           <li>Tap "Add" to confirm</li>
         </ol>
       </div>
-
       <div class="about-card">
         <div class="about-card-title">Powered by</div>
-        <p>smallplanevalue.com — Aircraft valuation, pre-buy checklists, and market listings for general aviation buyers.</p>
+        <p>smallplanevalue.com &mdash; Aircraft valuation, pre-buy checklists, and market listings for general aviation buyers.</p>
       </div>
     </div>
   </div>
-
 </div>
 
-<!-- Bottom Nav -->
 <div class="bottom-nav">
   <div class="nav-item active" id="nav-lookup" onclick="switchTab('lookup')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     <span class="nav-label">Lookup</span>
   </div>
   <div class="nav-item" id="nav-history" onclick="switchTab('history')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-      <path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
     <span class="nav-label">History</span>
   </div>
   <div class="nav-item" id="nav-about" onclick="switchTab('about')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-      <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
-    </svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
     <span class="nav-label">About</span>
   </div>
 </div>
 
 <script>
 const API = 'https://smallplanevalue.com/.netlify/functions/proxy';
-let history_store = JSON.parse(localStorage.getItem('nlookup_history') || '[]');
+let hs = JSON.parse(localStorage.getItem('nlookup_history') || '[]');
 
-function switchTab(tab) {
+function switchTab(t) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('nav-' + tab).classList.add('active');
-  if (tab === 'history') renderHistory();
+  document.getElementById('tab-' + t).classList.add('active');
+  document.getElementById('nav-' + t).classList.add('active');
+  if (t === 'history') renderHistory();
 }
 
-// ── LOOKUP ──────────────────────────────────────────────
 async function doLookup() {
   const raw = document.getElementById('nn').value.trim().toUpperCase();
   if (!raw) { document.getElementById('nn').focus(); return; }
   const nn = raw.replace(/^N/i, '');
-
   document.getElementById('result').innerHTML = '';
   document.getElementById('home-state').style.display = 'none';
+  document.querySelector('.hero').style.display = 'none';
   document.getElementById('loading').classList.add('on');
   document.getElementById('lookup-btn').disabled = true;
-
   try {
-    const resp = await fetch(API, {
+    const r = await fetch(API, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'faa_lookup', nnumber: nn })
     });
-    const data = await resp.json();
+    const d = await r.json();
     document.getElementById('loading').classList.remove('on');
     document.getElementById('lookup-btn').disabled = false;
-
-    if (!resp.ok || data.error) {
-      renderError(data.error || 'Lookup failed. Check your connection.');
-      return;
-    }
-
-    if (!data.found) {
-      renderNotFound(nn);
-      return;
-    }
-
-    saveHistory(data);
-    renderResult(data);
-    updateRecentChips();
-
-  } catch(e) {
+    if (!r.ok || d.error) { renderError(d.error || 'Lookup failed.'); return; }
+    if (!d.found) { renderNotFound(nn); return; }
+    saveH(d);
+    renderResult(d);
+    updateChips();
+  } catch (e) {
     document.getElementById('loading').classList.remove('on');
     document.getElementById('lookup-btn').disabled = false;
-    renderError('Could not reach the registry. Check your connection.');
+    renderError('Connection error. Try again.');
   }
 }
 
-// ── RENDER RESULT ───────────────────────────────────────
 function renderResult(d) {
-  const nn = d.nnumber || ('N' + document.getElementById('nn').value.toUpperCase().replace(/^N/,''));
-  const status = (d.status || '').toLowerCase();
-  const statusClass = status.includes('valid') ? 'status-valid' : status.includes('invalid') || status.includes('cancel') ? 'status-invalid' : 'status-other';
-  const statusLabel = d.status || 'Unknown';
+  const nn = d.nnumber;
+  const st = (d.status || '').toLowerCase();
+  const sc = st.includes('valid') ? 'status-valid' : st.includes('invalid') || st.includes('cancel') ? 'status-invalid' : 'status-other';
+  const mm = [d.make, d.model].filter(Boolean).join(' ');
+  const eng = [d.numEngines > 1 ? d.numEngines + '-engine' : '', d.engineMake, d.engineModel].filter(Boolean).join(' ');
 
-  const makeModel = [d.make, d.model].filter(Boolean).join(' ');
-  const engines = d.numEngines > 1 ? `${d.numEngines}-engine` : '';
-  const engineDesc = [engines, d.engineMake, d.engineModel].filter(Boolean).join(' ');
+  let h = '<div class="result">';
+  h += '<div class="ident-card"><div class="ident-header"><div>';
+  h += '<div class="ident-nn">' + nn + '</div>';
+  h += '<div class="ident-make-model">' + (mm || 'Unknown') + '</div>';
+  h += '<div class="ident-year">' + (d.year || '') + '</div>';
+  h += '</div><div class="status-badge ' + sc + '">' + (d.status || 'Unknown') + '</div></div>';
+  h += '<div class="data-grid">';
+  h += C('Make', d.make, 'accent') + C('Model', d.model);
+  h += C('Year', d.year, 'green') + C('Serial', d.serialNumber);
+  h += C('Engine', eng || d.engineType || '', 'sky', 1);
+  h += C('HP', d.horsepower ? d.horsepower + ' HP' : '') + C('Seats', d.seats) + C('Speed', d.speed ? d.speed + ' kt' : '');
+  h += '</div></div>';
 
-  let html = `
-  <div class="result">
-    <div class="ident-card">
-      <div class="ident-header">
-        <div>
-          <div class="ident-nn">${nn}</div>
-          <div class="ident-make-model">${makeModel || '—'}</div>
-          <div class="ident-year">${d.year || ''}</div>
-        </div>
-        <div class="status-badge ${statusClass}">${statusLabel}</div>
-      </div>
-      <div class="data-grid">
-        ${cell('Make', d.make, 'accent')}
-        ${cell('Model', d.model)}
-        ${cell('Year', d.year, 'green')}
-        ${cell('Serial No.', d.serialNumber)}
-        ${cell('Engine', engineDesc || d.engineType || '—', 'sky', true)}
-        ${cell('Horsepower', d.horsepower ? d.horsepower + ' HP' : '—')}
-        ${cell('Seats', d.seats || '—')}
-        ${cell('Speed', d.speed ? d.speed + ' kt' : '—')}
-      </div>
-    </div>`;
-
-  // Owner / Registration card
-  if (d.registrantName || d.city || d.state) {
-    html += `
-    <div class="section-card">
-      <div class="section-header">
-        <div class="section-icon sky"></div>
-        <div class="section-title">Owner & Registration</div>
-      </div>
-      <div class="data-grid">
-        ${cell('Registrant', d.registrantName || '—', '', true)}
-        ${cell('City', d.city || '—')}
-        ${cell('State', d.state || '—')}
-        ${cell('Cert. Issued', fmt_date(d.certDate))}
-        ${cell('Airworth. Date', fmt_date(d.airworthDate))}
-        ${cell('Reg. Expires', fmt_date(d.registrationExpiry), exp_color(d.registrationExpiry))}
-      </div>
-    </div>`;
+  if (d.registrantName || d.city) {
+    h += '<div class="section-card"><div class="section-header"><div class="section-icon sky"></div><div class="section-title">Owner & Registration</div></div><div class="data-grid">';
+    h += C('Registrant', d.registrantName, '', 1);
+    h += C('City', d.city) + C('State', d.state);
+    h += C('Cert Issued', F(d.certDate)) + C('Airworth', F(d.airworthDate));
+    h += C('Expires', F(d.registrationExpiry), X(d.registrationExpiry));
+    h += '</div></div>';
   }
 
-  // Aircraft type details
-  html += `
-  <div class="section-card">
-    <div class="section-header">
-      <div class="section-icon amber"></div>
-      <div class="section-title">Aircraft Details</div>
-    </div>
-    <div class="data-grid">
-      ${cell('Type', d.aircraftType || '—')}
-      ${cell('Engine Type', d.engineType || '—')}
-      ${cell('Weight Class', d.weightClass || '—')}
-      ${cell('Engines', d.numEngines || '—')}
-    </div>
-  </div>`;
+  h += '<div class="section-card"><div class="section-header"><div class="section-icon amber"></div><div class="section-title">Aircraft Details</div></div><div class="data-grid">';
+  h += C('Type', d.aircraftType) + C('Engine Type', d.engineType);
+  h += C('Weight', d.weightClass) + C('Engines', d.numEngines);
+  h += '</div></div>';
 
-  // Kit aircraft
-  if (d.kitMfr || d.kitModel) {
-    html += `
-    <div class="section-card">
-      <div class="section-header">
-        <div class="section-icon green"></div>
-        <div class="section-title">Kit Aircraft</div>
-      </div>
-      <div class="data-grid">
-        ${cell('Kit Mfr', d.kitMfr || '—')}
-        ${cell('Kit Model', d.kitModel || '—')}
-      </div>
-    </div>`;
+  if (d.kitMfr) {
+    h += '<div class="section-card"><div class="section-header"><div class="section-icon green"></div><div class="section-title">Kit Aircraft</div></div><div class="data-grid">';
+    h += C('Kit Mfr', d.kitMfr) + C('Kit Model', d.kitModel);
+    h += '</div></div>';
   }
 
-  html += '</div>';
-  document.getElementById('result').innerHTML = html;
+  h += '</div>';
+  document.getElementById('result').innerHTML = h;
 }
 
-function cell(label, value, colorClass, full) {
-  const cls = colorClass ? `cell-value ${colorClass}` : 'cell-value';
-  const val = value || '<span class="cell-value dim">—</span>';
-  return `<div class="data-cell${full?' full':''}">
-    <div class="cell-label">${label}</div>
-    <div class="${cls}">${val}</div>
-  </div>`;
+function C(l, v, c, f) {
+  return '<div class="data-cell' + (f ? ' full' : '') + '"><div class="cell-label">' + l + '</div><div class="cell-value' + (c ? ' ' + c : '') + '">' + (v || '<span class="dim">\u2014</span>') + '</div></div>';
 }
 
-function fmt_date(s) {
+function F(s) {
   if (!s) return null;
-  try {
-    const d = new Date(s);
-    if (isNaN(d)) return s;
-    return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
-  } catch { return s; }
+  try { const d = new Date(s); return isNaN(d) ? s : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch { return s; }
 }
 
-function exp_color(s) {
+function X(s) {
   if (!s) return '';
-  try {
-    const exp = new Date(s);
-    const now = new Date();
-    const days = (exp - now) / 86400000;
-    if (days < 0) return 'accent';
-    if (days < 90) return 'sky';
-    return 'green';
-  } catch { return ''; }
+  try { return ((new Date(s) - new Date()) / 864e5 < 0) ? 'accent' : ((new Date(s) - new Date()) / 864e5 < 90) ? 'sky' : 'green'; } catch { return ''; }
 }
 
 function renderNotFound(nn) {
-  document.getElementById('result').innerHTML = `
-  <div class="result">
-    <div class="not-found">
-      <div class="not-found-icon">✈</div>
-      <div class="not-found-title">N${nn} Not Found</div>
-      <div class="not-found-sub">No FAA registration found for this tail number. Verify the number and try again.</div>
-    </div>
-  </div>`;
+  document.getElementById('result').innerHTML = '<div class="result"><div class="not-found"><div class="not-found-icon">\u2708</div><div class="not-found-title">N' + nn + ' Not Found</div><div class="not-found-sub">No registration found. Verify the number.</div></div></div>';
 }
 
-function renderError(msg) {
-  document.getElementById('result').innerHTML = `
-  <div class="result">
-    <div class="error-banner">${msg}</div>
-  </div>`;
+function renderError(m) {
+  document.getElementById('result').innerHTML = '<div class="result"><div class="error-banner">' + m + '</div></div>';
   document.getElementById('home-state').style.display = 'block';
+  document.querySelector('.hero').style.display = 'block';
 }
 
-// ── HISTORY ─────────────────────────────────────────────
-function saveHistory(d) {
-  const nn = d.nnumber;
-  history_store = history_store.filter(h => h.nn !== nn);
-  history_store.unshift({
-    nn, make: d.make, model: d.model, year: d.year,
-    ts: Date.now(), data: d
-  });
-  if (history_store.length > 50) history_store = history_store.slice(0, 50);
-  localStorage.setItem('nlookup_history', JSON.stringify(history_store));
+function saveH(d) {
+  hs = hs.filter(h => h.nn !== d.nnumber);
+  hs.unshift({ nn: d.nnumber, make: d.make, model: d.model, year: d.year, ts: Date.now(), data: d });
+  if (hs.length > 50) hs = hs.slice(0, 50);
+  localStorage.setItem('nlookup_history', JSON.stringify(hs));
 }
 
 function renderHistory() {
   const el = document.getElementById('history-list');
-  if (!history_store.length) {
-    el.innerHTML = '<div class="history-empty">No lookups yet.<br>Search a tail number to get started.</div>';
-    return;
-  }
-  el.innerHTML = history_store.map(h => `
-    <div class="history-item" onclick="loadFromHistory('${h.nn}')">
-      <div>
-        <div class="history-nn">${h.nn}</div>
-        <div class="history-info">${[h.year, h.make, h.model].filter(Boolean).join(' · ')}</div>
-      </div>
-      <div class="history-arrow">›</div>
-    </div>`).join('');
+  if (!hs.length) { el.innerHTML = '<div class="history-empty">No lookups yet.<br>Search a tail number to get started.</div>'; return; }
+  el.innerHTML = hs.map(h => '<div class="history-item" onclick="lH(\'' + h.nn + '\')"><div><div class="history-nn">' + h.nn + '</div><div class="history-info">' + [h.year, h.make, h.model].filter(Boolean).join(' \u00b7 ') + '</div></div><div class="history-arrow">\u203a</div></div>').join('');
 }
 
-function loadFromHistory(nn) {
-  const item = history_store.find(h => h.nn === nn);
-  if (!item) return;
+function lH(nn) {
+  const i = hs.find(h => h.nn === nn);
+  if (!i) return;
   document.getElementById('nn').value = nn.replace(/^N/, '');
   switchTab('lookup');
-  renderResult(item.data);
+  document.querySelector('.hero').style.display = 'none';
+  renderResult(i.data);
   document.getElementById('home-state').style.display = 'none';
 }
 
-// ── RECENT CHIPS ─────────────────────────────────────────
-function updateRecentChips() {
-  const recent = history_store.slice(0, 6);
-  if (!recent.length) { document.getElementById('recent-section').style.display = 'none'; return; }
+function updateChips() {
+  const r = hs.slice(0, 6);
+  if (!r.length) { document.getElementById('recent-section').style.display = 'none'; return; }
   document.getElementById('recent-section').style.display = 'block';
-  document.getElementById('recent-chips').innerHTML = recent.map(h =>
-    `<div class="chip" onclick="document.getElementById('nn').value='${h.nn.replace(/^N/,'')}';doLookup()">${h.nn}</div>`
-  ).join('');
+  document.getElementById('recent-chips').innerHTML = r.map(h => '<div class="chip" onclick="document.getElementById(\'nn\').value=\'' + h.nn.replace(/^N/, '') + '\';doLookup()">' + h.nn + '</div>').join('');
 }
 
-// Init
-updateRecentChips();
-if (history_store.length) document.getElementById('recent-section').style.display = 'block';
+updateChips();
+if (hs.length) document.getElementById('recent-section').style.display = 'block';
 </script>
 </body>
 </html>
