@@ -231,11 +231,11 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 
 /* ── BOTTOM NAV ── */
 .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--navy); border-top: 1px solid rgba(255,255,255,0.1); padding: 10px 0 env(safe-area-inset-bottom, 10px); display: flex; justify-content: space-around; z-index: 100; }
-.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 20px; cursor: pointer; opacity: 0.4; transition: opacity 0.15s; }
+.nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 20px; cursor: pointer; opacity: 0.5; transition: opacity 0.15s; }
 .nav-item.active { opacity: 1; }
-.nav-item svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.6); }
+.nav-item svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.7); }
 .nav-item.active svg { stroke: #f0c050; }
-.nav-label { font-family: var(--cond); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+.nav-label { font-family: var(--cond); font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
 .nav-item.active .nav-label { color: #f0c050; }
 
 .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -316,10 +316,13 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
         <div class="empty-sub">Get make, model, year, engine, owner, and registration details for any FAA-registered aircraft.</div>
       </div>
       <div class="install-prompt" id="install-prompt">
-        <div class="install-prompt-title">Add to your phone</div>
+        <div class="install-prompt-title">Save this app to your phone</div>
         <div class="install-prompt-text" id="install-text">
           <strong>iPhone:</strong> Tap the Share button (box with arrow) then "Add to Home Screen"<br><br>
           <strong>Android:</strong> Tap the menu (&#8942;) then "Add to Home screen"
+        </div>
+        <div style="margin-top:12px;text-align:center">
+          <span onclick="switchTab('about')" style="display:inline-block;background:#1a2744;color:#f0c050;font-family:var(--cond);font-weight:700;font-size:14px;letter-spacing:0.1em;text-transform:uppercase;padding:10px 24px;border-radius:8px;cursor:pointer">Full instructions &darr;</span>
         </div>
       </div>
     </div>
@@ -374,8 +377,8 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
     <span class="nav-label">History</span>
   </div>
   <div class="nav-item" id="nav-about" onclick="switchTab('about')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-    <span class="nav-label">About</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    <span class="nav-label">Install</span>
   </div>
 </div>
 
