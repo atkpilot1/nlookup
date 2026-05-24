@@ -45,7 +45,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .hero {
   position: relative;
   width: 100%;
-  height: 220px;
+  height: 280px;
   overflow: hidden;
 }
 .hero img {
@@ -63,14 +63,14 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .hero-title {
   font-family: var(--cond);
   font-weight: 700;
-  font-size: 28px;
+  font-size: 36px;
   letter-spacing: 0.06em;
   color: #fff;
   text-transform: uppercase;
 }
 .hero-sub {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 13px;
   color: rgba(255,255,255,0.7);
   letter-spacing: 0.1em;
   margin-top: 2px;
@@ -87,10 +87,10 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 }
 .n-prefix {
   font-family: var(--mono);
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
   color: var(--navy);
-  padding: 14px 0 14px 16px;
+  padding: 16px 0 16px 18px;
   background: var(--white);
   border: 2px solid var(--border);
   border-right: none;
@@ -106,8 +106,8 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   border-radius: 0 12px 12px 0;
   color: var(--navy);
   font-family: var(--mono);
-  font-size: 24px;
-  padding: 14px 14px 14px 4px;
+  font-size: 28px;
+  padding: 16px 16px 16px 4px;
   outline: none;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -116,7 +116,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   -webkit-appearance: none;
   transition: border-color 0.2s;
 }
-.nn-input::placeholder { color: var(--text-dim); font-size: 18px; }
+.nn-input::placeholder { color: var(--text-dim); font-size: 22px; }
 .nn-input:focus { border-color: var(--blue); }
 .n-prefix:has(+ .nn-input:focus) { border-color: var(--blue); }
 .lookup-btn {
@@ -124,10 +124,10 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   color: #fff;
   border: none;
   border-radius: 12px;
-  padding: 0 22px;
+  padding: 0 24px;
   font-family: var(--cond);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
@@ -138,7 +138,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .lookup-btn:disabled { background: var(--muted); }
 .search-hint {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-dim);
   padding: 8px 2px 14px;
 }
@@ -239,11 +239,11 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 
 .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .empty-state { display: flex; flex-direction: column; align-items: center; padding: 30px 30px; text-align: center; gap: 10px; }
-.empty-title { font-family: var(--cond); font-size: 18px; font-weight: 600; color: var(--text); }
-.empty-sub { font-family: var(--sans); font-size: 14px; color: var(--text-dim); line-height: 1.6; max-width: 300px; }
+.empty-title { font-family: var(--cond); font-size: 22px; font-weight: 600; color: var(--text); }
+.empty-sub { font-family: var(--sans); font-size: 16px; color: var(--text-dim); line-height: 1.6; max-width: 320px; }
 .install-prompt { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 0 18px 20px; box-shadow: var(--shadow); }
-.install-prompt-title { font-family: var(--cond); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--navy); text-transform: uppercase; margin-bottom: 8px; }
-.install-prompt-text { font-family: var(--sans); font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+.install-prompt-title { font-family: var(--cond); font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: var(--navy); text-transform: uppercase; margin-bottom: 8px; }
+.install-prompt-text { font-family: var(--sans); font-size: 15px; color: var(--text-dim); line-height: 1.6; }
 .install-prompt-text strong { color: var(--navy); font-weight: 600; }
 
 .history-list { padding: 12px 18px 100px; }
