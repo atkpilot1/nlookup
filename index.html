@@ -28,9 +28,9 @@
   --amber-light: #fef5e2;
   --red: #cc3333;
   --red-light: #fce8e8;
-  --muted: #7a8a9a;
+  --muted: #556575;
   --text: #1a2744;
-  --text-dim: #5a6a7a;
+  --text-dim: #3a4a5a;
   --mono: 'Share Tech Mono', monospace;
   --sans: 'Barlow', sans-serif;
   --cond: 'Barlow Condensed', sans-serif;
@@ -116,7 +116,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
   -webkit-appearance: none;
   transition: border-color 0.2s;
 }
-.nn-input::placeholder { color: var(--muted); font-size: 18px; }
+.nn-input::placeholder { color: var(--text-dim); font-size: 18px; }
 .nn-input:focus { border-color: var(--blue); }
 .n-prefix:has(+ .nn-input:focus) { border-color: var(--blue); }
 .lookup-btn {
@@ -139,7 +139,7 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .search-hint {
   font-family: var(--mono);
   font-size: 11px;
-  color: var(--muted);
+  color: var(--text-dim);
   padding: 8px 2px 14px;
 }
 
@@ -240,7 +240,11 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
 .scroll-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .empty-state { display: flex; flex-direction: column; align-items: center; padding: 30px 30px; text-align: center; gap: 10px; }
 .empty-title { font-family: var(--cond); font-size: 18px; font-weight: 600; color: var(--text); }
-.empty-sub { font-family: var(--sans); font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 300px; }
+.empty-sub { font-family: var(--sans); font-size: 14px; color: var(--text-dim); line-height: 1.6; max-width: 300px; }
+.install-prompt { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 18px; margin: 0 18px 20px; box-shadow: var(--shadow); }
+.install-prompt-title { font-family: var(--cond); font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--navy); text-transform: uppercase; margin-bottom: 8px; }
+.install-prompt-text { font-family: var(--sans); font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+.install-prompt-text strong { color: var(--navy); font-weight: 600; }
 
 .history-list { padding: 12px 18px 100px; }
 .history-item { background: var(--card); border: 1.5px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow); }
@@ -309,6 +313,13 @@ body { display: flex; flex-direction: column; min-height: 100vh; }
       <div class="empty-state">
         <div class="empty-title">Look up any tail number</div>
         <div class="empty-sub">Get make, model, year, engine, owner, and registration details for any FAA-registered aircraft.</div>
+      </div>
+      <div class="install-prompt" id="install-prompt">
+        <div class="install-prompt-title">Add to your phone</div>
+        <div class="install-prompt-text" id="install-text">
+          <strong>iPhone:</strong> Tap the Share button (box with arrow) then "Add to Home Screen"<br><br>
+          <strong>Android:</strong> Tap the menu (&#8942;) then "Add to Home screen"
+        </div>
       </div>
     </div>
   </div>
@@ -509,6 +520,9 @@ function updateChips() {
 
 updateChips();
 if (hs.length) document.getElementById('recent-section').style.display = 'block';
+if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+  var ip = document.getElementById('install-prompt'); if(ip) ip.style.display = 'none';
+}
 </script>
 </body>
 </html>
